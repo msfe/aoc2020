@@ -1,6 +1,5 @@
 import readline = require('readline')
 import fs = require('fs');
-const { once } = require('events');
 
 
 const findTwo = (input: number[]): number => {
