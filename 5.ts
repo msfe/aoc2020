@@ -32,11 +32,23 @@ async function readNumberInput(filename: string): Promise<seat[]> {
     return input;
 }
 
+const mySeat = (seatIds: number[]): number => {
+    const sortedSeats = seatIds.sort((a, b) => a > b ? 1 : -1);
+    for (let i = 1; i < sortedSeats.length - 1; i++) {
+        if (sortedSeats[i] - sortedSeats[i - 1] == 2) {
+            return sortedSeats[i] - 1;
+        }
+    }
+    return -1;
+}
+
 
 async function main() {
     const input: seat[] = await readNumberInput('input5');
-    const answer1 = input.map(seat => getSeatValue(seat)).reduce((max, current): number => { return Math.max(max, current) }, 0);
-    console.log(`Answer 1: ${JSON.stringify(answer1)}`);
+    const seatIds: number[] = input.map(seat => getSeatValue(seat));
+    const answer1 = seatIds.reduce((max, current): number => { return Math.max(max, current) }, 0);
+    console.log(`Answer 1: ${answer1}`);
+    console.log(`Answer 1: ${mySeat(seatIds)}`);
 }
 
 main();
