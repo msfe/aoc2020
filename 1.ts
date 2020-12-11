@@ -30,7 +30,7 @@ const findThree = (input: number[]): number => {
     return -1;
 }
 
-async function main() {
+function main() {
     const input: number[] = fs.readFileSync(path.resolve(__dirname, 'input1')).toString().split('\r\n').map(s => parseInt(s));
     console.log(`Answer 1: ${findTwo(input)}`);
     console.log(`Answer 2: ${findThree(input)}`);

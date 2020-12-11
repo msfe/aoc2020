@@ -23,7 +23,7 @@ interface policyPass {
     password: string;
 }
 
-async function readNumberInput(filename: string): Promise<policyPass[]> {
+async function readInput(filename: string): Promise<policyPass[]> {
     const fileStream = fs.createReadStream(filename);
 
     const rl = readline.createInterface({
@@ -46,7 +46,7 @@ async function readNumberInput(filename: string): Promise<policyPass[]> {
 
 
 async function main() {
-    const input: policyPass[] = await readNumberInput('input2');
+    const input: policyPass[] = await readInput('input2');
     const policy1 = input.filter(item => isOkPolicy1(item));
     const policy2 = input.filter(item => isOkPolicy2(item));
     console.log(`Answer 1: ${policy1.length}`);

@@ -1,4 +1,4 @@
-import readline = require('readline')
+import path = require('path')
 import fs = require('fs');
 
 
@@ -15,24 +15,8 @@ const numberOfTrees = (input: string[], right: number, down: number): number => 
 }
 
 
-async function readNumberInput(filename: string): Promise<string[]> {
-    const fileStream = fs.createReadStream(filename);
-
-    const rl = readline.createInterface({
-        input: fileStream,
-        crlfDelay: Infinity
-    });
-
-    const input: string[] = [];
-    for await (const line of rl) {
-        input.push(line);
-    }
-    return input;
-}
-
-
-async function main() {
-    const input: string[] = await readNumberInput('input3');
+function main() {
+    const input: string[] = fs.readFileSync(path.resolve(__dirname, 'input3')).toString().split('\r\n');
     const slope1 = numberOfTrees(input, 1, 1);
     const slope2 = numberOfTrees(input, 3, 1);
     const slope3 = numberOfTrees(input, 5, 1);
