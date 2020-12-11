@@ -1,6 +1,5 @@
-import readline = require('readline')
+import path = require('path');
 import fs = require('fs');
-
 
 const findTwo = (input: number[]): number => {
     for (let index = 0; index < input.length; index++) {
@@ -12,6 +11,7 @@ const findTwo = (input: number[]): number => {
             }
         }
     }
+    return -1;
 }
 
 const findThree = (input: number[]): number => {
@@ -27,26 +27,11 @@ const findThree = (input: number[]): number => {
             }
         }
     }
+    return -1;
 }
-
-async function readNumberInput(filename: string): Promise<number[]> {
-    const fileStream = fs.createReadStream(filename);
-
-    const rl = readline.createInterface({
-        input: fileStream,
-        crlfDelay: Infinity
-    });
-
-    const input: number[] = [];
-    for await (const line of rl) {
-        input.push(Number(line));
-    }
-    return input;
-}
-
 
 async function main() {
-    const input: number[] = await readNumberInput('input1');
+    const input: number[] = fs.readFileSync(path.resolve(__dirname, 'input1')).toString().split('\r\n').map(s => parseInt(s));
     console.log(`Answer 1: ${findTwo(input)}`);
     console.log(`Answer 2: ${findThree(input)}`);
 }
