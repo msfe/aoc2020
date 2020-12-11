@@ -1,4 +1,3 @@
-import readline = require('readline')
 import fs = require('fs');
 
 const getUnique = (input: string[]): string[] => {
@@ -25,13 +24,8 @@ const numberOfAllAnswers = (input: string[]): number => {
     return Array.from(uniq).filter((char) => mergedInput.match(`${char}{${input.length}}`)).length;
 }
 
-function readInput(filename: string): string {
-    return fs.readFileSync(filename).toString();
-}
-
-
 function main() {
-    const input: string[] = readInput('input6').split(/\r\n\r\n/g);
+    const input: string[] = fs.readFileSync('input6').toString().split(/\r\n\r\n/g);
     const cleanedInput: string[][] = input.map(str => str.split('\r\n'));
     const answers1: number[] = cleanedInput.map(str => numberOfUniqueAnswers(str));
     console.log(`Answer 1: ${JSON.stringify(answers1.reduce((acc, curr) => acc + curr, 0))}`);
