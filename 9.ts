@@ -1,4 +1,4 @@
-import readline = require('readline')
+import path = require('path')
 import fs = require('fs');
 
 const isValid = (preamble: number[], value: number): boolean => {
@@ -24,20 +24,6 @@ const findFirstInvalid = (input: number[], preambleSize: number): number => {
     return validateValue(input, preambleSize, preambleSize + 1);
 }
 
-async function readNumberInput(filename: string): Promise<number[]> {
-    const fileStream = fs.createReadStream(filename);
-
-    const rl = readline.createInterface({
-        input: fileStream,
-        crlfDelay: Infinity
-    });
-
-    const input: number[] = [];
-    for await (const line of rl) {
-        input.push(Number(line));
-    }
-    return input;
-}
 
 const getValue = (vulnerable: number[]): number => {
     const min = vulnerable.reduce((min, cur) => Math.min(min, cur), Number.MAX_VALUE);
@@ -90,14 +76,14 @@ const findVulnerableIterative = (input: number[], value: number): number[] => {
 
 const findFlaw = (input: number[], value: number): number => {
     const vulnerable = findVulnerableIterative(input, value);
-    console.log(JSON.stringify(vulnerable));
+    //console.log(JSON.stringify(vulnerable));
     return getValue(vulnerable);
 }
 
 
-async function main() {
-    const input: number[] = await readNumberInput('input9');
-    const test: number[] = await readNumberInput('input9test');
+function main() {
+    const input: number[] = fs.readFileSync(path.resolve(__dirname, 'input9')).toString().split('\r\n').map(s => parseInt(s));
+    const test: number[] = fs.readFileSync(path.resolve(__dirname, 'input9test')).toString().split('\r\n').map(s => parseInt(s));
     const firstInvalidTest = findFirstInvalid(test, 5);
     const firstInvalid = findFirstInvalid(input, 25);
     console.log(`Test 1: ${firstInvalidTest}`);
