@@ -1,4 +1,4 @@
-import readline = require('readline')
+import path = require('path')
 import fs = require('fs');
 
 
@@ -42,24 +42,10 @@ const findWorkingLoop = (input: string[]): number => {
     return input.map((_, index) => testInfLoop(testRow(input, index))).filter(res => res.finished)[0].acc
 }
 
-async function readNumberInput(filename: string): Promise<string[]> {
-    const fileStream = fs.createReadStream(filename);
-
-    const rl = readline.createInterface({
-        input: fileStream,
-        crlfDelay: Infinity
-    });
-
-    const input: string[] = [];
-    for await (const line of rl) {
-        input.push(line);
-    }
-    return input;
-}
 
 
 async function main() {
-    const input: string[] = await readNumberInput('input8');
+    const input: string[] = fs.readFileSync(path.resolve(__dirname, 'input8')).toString().split('\r\n');
     console.log(`Answer 1: ${testInfLoop(input).acc}`);
     console.log(`Answer 2: ${findWorkingLoop(input)}`);
 }
