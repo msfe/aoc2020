@@ -13,13 +13,7 @@ const setCharAt = (str: string, index: number, chr: string): string => {
 }
 
 const isOccupied = (map: string[], row: number, col: number, dirRow: number, dirCol: number, assignment: number): boolean => {
-    if (row == 0 && dirRow == -1)
-        return false;
-    if (col == 0 && dirCol == -1)
-        return false;
-    if (row == map.length - 1 && dirRow == 1)
-        return false;
-    if (col == map[row].length - 1 && dirCol == 1)
+    if ((row == 0 && dirRow == -1)||(col == 0 && dirCol == -1)||(row == map.length - 1 && dirRow == 1)||(col == map[row].length - 1 && dirCol == 1))
         return false;
     
     const tile = map[row + dirRow].charAt(col + dirCol);
@@ -31,9 +25,8 @@ const isOccupied = (map: string[], row: number, col: number, dirRow: number, dir
         else
             return isOccupied(map,row+dirRow,col+dirCol,dirRow,dirCol,assignment);
 
-    } else {
-        return tile == "#";
     }
+    return tile == "#";
 }
 
 const numberOfOccupied = (map: string[], row: number, col: number, assignment: number): number => {
