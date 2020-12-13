@@ -12,68 +12,53 @@ const setCharAt = (str: string, index: number, chr: string): string => {
     return str.substring(0, index) + chr + str.substring(index + 1);
 }
 
-const allAdjacentFree = (map: string[], row: number, col: number): boolean => {
-    if (row > 0) {
-        if (map[row - 1].charAt(col) == "#")
-            return false
-        if (col > 0 && map[row - 1].charAt(col - 1) == "#")
-            return false
-        if (col < map[row].length - 1 && map[row - 1].charAt(col + 1) == "#")
-            return false
-    }
-    if (row < map.length - 1) {
-        if (map[row + 1].charAt(col) == "#")
-            return false
-        if (col > 0 && map[row + 1].charAt(col - 1) == "#")
-            return false
-        if (col < map[row].length - 1 && map[row + 1].charAt(col + 1) == "#")
-            return false
-    }
-    if (col > 0 && map[row].charAt(col - 1) == "#")
-        return false
-    if (col < map[row].length - 1 && map[row].charAt(col + 1) == "#")
-        return false
+const isOccupied = (map: string[], row: number, col: number, dirRow: number, dirCol: number): boolean => {
+    if (row == 0 && dirRow == -1)
+        return false;
+    if (col == 0 && dirCol == -1)
+        return false;
+    if (row == map.length - 1 && dirRow == 1)
+        return false;
+    if (col == map[row].length - 1 && dirCol == 1)
+        return false;
 
-    return true;
+    return map[row + dirRow].charAt(col + dirCol) == "#";
 }
 
-const atLeastFourOccupied = (map: string[], row: number, col: number): boolean => {
+const numberOfOccupied = (map: string[], row: number, col: number, assignment: number): number => {
     let occupied = 0;
-    if (row > 0) {
-        if (map[row - 1].charAt(col) == "#")
-            occupied++;
-        if (col > 0 && map[row - 1].charAt(col - 1) == "#")
-            occupied++;
-        if (col < map[row].length - 1 && map[row - 1].charAt(col + 1) == "#")
-            occupied++;
-    }
-    if (row < map.length - 1) {
-        if (map[row + 1].charAt(col) == "#")
-            occupied++;
-        if (col > 0 && map[row + 1].charAt(col - 1) == "#")
-            occupied++;
-        if (col < map[row].length - 1 && map[row + 1].charAt(col + 1) == "#")
-            occupied++;
-    }
-    if (col > 0 && map[row].charAt(col - 1) == "#")
-        occupied++;
-    if (col < map[row].length - 1 && map[row].charAt(col + 1) == "#")
-        occupied++;
+    if (isOccupied(map, row, col, -1, -1))
+        occupied++
+    if (isOccupied(map, row, col, -1, 0))
+        occupied++
+    if (isOccupied(map, row, col, -1, 1))
+        occupied++
+    if (isOccupied(map, row, col, 0, -1))
+        occupied++
+    if (isOccupied(map, row, col, 0, 1))
+        occupied++
+    if (isOccupied(map, row, col, 1, -1))
+        occupied++
+    if (isOccupied(map, row, col, 1, 0))
+        occupied++
+    if (isOccupied(map, row, col, 1, 1))
+        occupied++
 
-    return occupied >= 4;
+    return occupied;
 }
 
 const getOccupiedSeats = (map: string[]): number => {
     return (map.join('').match(/#/g) || []).length;
 }
 
-const iterateMap = (mapState: map): map => {
+const iterateMap = (mapState: map, assignment: number): map => {
+    const consideredOccupied = assignment == 1?4:5;
     const nextMapState = JSON.parse(JSON.stringify(mapState));
     for (let row = 0; row < mapState.map.length; row++) {
         for (let col = 0; col < mapState.map[row].length; col++) {
-            if (mapState.map[row].charAt(col) == 'L' && allAdjacentFree(mapState.map, row, col)) //Seat is free and should change
+            if (mapState.map[row].charAt(col) == 'L' && numberOfOccupied(mapState.map, row, col, assignment) == 0) //Seat is free and should change
                 nextMapState.map[row] = setCharAt(nextMapState.map[row], col, "#");
-            if (mapState.map[row].charAt(col) == '#' && atLeastFourOccupied(mapState.map, row, col)) //Seat is free and should change
+            if (mapState.map[row].charAt(col) == '#' && numberOfOccupied(mapState.map, row, col, assignment) >= consideredOccupied) //Seat is free and should change
                 nextMapState.map[row] = setCharAt(nextMapState.map[row], col, "L");
         }
     }
@@ -82,12 +67,10 @@ const iterateMap = (mapState: map): map => {
     return nextMapState;
 }
 
-const getStableCount = (mapState: map): number => {
+const getStableCount = (mapState: map, assignment: number): number => {
     let currentMap = mapState;
     for (; ;) {
-        //console.log('We got a map!')
-        //console.log(currentMap.map.join('\n'))
-        currentMap = iterateMap(currentMap);
+        currentMap = iterateMap(currentMap, assignment);
         if (currentMap.isStable)
             return currentMap.occupiedSeats;
     }
@@ -95,7 +78,7 @@ const getStableCount = (mapState: map): number => {
 
 async function main() {
     const input: string[] = fs.readFileSync(path.resolve(__dirname, 'input11')).toString().split('\r\n');
-    console.log(`Answer 1: ${getStableCount({ occupiedSeats: 0, map: input, isStable: false })}`);
+    console.log(`Answer 1: ${getStableCount({ occupiedSeats: 0, map: input, isStable: false },1)}`);
 }
 
 main();
