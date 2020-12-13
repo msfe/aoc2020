@@ -1,6 +1,5 @@
 import fs = require('fs');
 import path = require('path');
-import { cursorTo } from 'readline';
 
 interface map {
     occupiedSeats: number,
