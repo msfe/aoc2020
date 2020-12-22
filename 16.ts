@@ -59,18 +59,6 @@ const validateTicket = (ticket: number[], validNumbers: number[]): boolean => {
     return !ticket.map(elem => validNumbers.includes(elem)).includes(false)
 }
 
-interface round {
-    columnTypes: {
-        [name: string]: number[];
-    };
-    columsOfValidTickets: number[][];
-    myTicket: number[];
-    ans: {
-        [name: string]: number;
-    };
-    depth: number
-}
-
 interface response {
     name: string,
     index: number
@@ -86,19 +74,18 @@ const getColArray = (columsOfValidTickets: number[][], colValidNumbers: number[]
 
 const getBestAlternative = (columnTypes: { [name: string]: number[] }, columsOfValidTickets: number[][]): response => {
     const columnNames = Object.keys(columnTypes);
-    const respArrays = columnNames.map(colName => getColArray(columsOfValidTickets,columnTypes[colName]))
-    //console.log(respArrays)
+    const respArrays = columnNames.map(colName => getColArray(columsOfValidTickets, columnTypes[colName]))
     let numberOfPossible = Number.MAX_VALUE;
     let bestIndex = -1;
     let bestCol = "";
     for (let i = 0; i < respArrays.length; i++) {
         const thisNumberOfPossibility = countTrue(respArrays[i]);
-        if(thisNumberOfPossibility == 0){
+        if (thisNumberOfPossibility == 0) {
             console.log("NOPE!");
         }
         if (thisNumberOfPossibility < numberOfPossible) {
             numberOfPossible = thisNumberOfPossibility;
-            bestIndex = respArrays[i].map((value,index) => value?index:-1).filter(index => index>=0)[0]
+            bestIndex = respArrays[i].map((value, index) => value ? index : -1).filter(index => index >= 0)[0]
             bestCol = columnNames[i];
         }
     }
@@ -106,37 +93,16 @@ const getBestAlternative = (columnTypes: { [name: string]: number[] }, columsOfV
     return { name: bestCol, index: bestIndex };
 }
 
-const mapColumns = (columnTypesIn: { [name: string]: number[] }, columsOfValidTicketsIn: number[][], myTicketIn: number[], ansIn: { [name: string]: number }, nbrOfColls: number): { [name: string]: number } => {
-
-    const queue: round[] = [];
-    queue.push({ columnTypes: columnTypesIn, columsOfValidTickets: columsOfValidTicketsIn, myTicket: myTicketIn, ans: ansIn, depth: 0 });
-
-    while (queue.length > 0) {
-        const next = queue.pop() as round;
-        const columnTypes = next.columnTypes;
-        const columsOfValidTickets = next.columsOfValidTickets;
-        const myTicket = next.myTicket;
-        const ans = next.ans;
-        const alternatives = getBestAlternative(columnTypes, columsOfValidTickets);
-        const colName = alternatives.name;
-        const index = alternatives.index;
-        //console.log(JSON.stringify(myTicket))
-        const nextColumnTypes = JSON.parse(JSON.stringify(columnTypes));
-        const nextAns = JSON.parse(JSON.stringify(ans));
-        const nextmyTicket = JSON.parse(JSON.stringify(myTicket));
-        const nextColumnsOfValidTickets = JSON.parse(JSON.stringify(columsOfValidTickets));
-        delete nextColumnTypes[colName];
-        nextAns[colName] = myTicket[index];
-        nextmyTicket.splice(index, 1);
-        nextColumnsOfValidTickets.splice(index, 1);
-        //console.log(JSON.stringify(nextAns))
-        queue.push({ columnTypes: nextColumnTypes, columsOfValidTickets: nextColumnsOfValidTickets, myTicket: nextmyTicket, ans: nextAns, depth: next.depth + 1 });
-        if (Object.keys(nextAns).length == nbrOfColls) {
-            console.log(JSON.stringify(nextAns))
-            return nextAns;
-        }
-    }
-return ansIn;
+const mapColumns = (columnTypes: { [name: string]: number[] }, columsOfValidTickets: number[][], myTicket: number[], ans: { [name: string]: number }, nbrOfColls: number): { [name: string]: number } => {
+    if (Object.keys(ans).length == nbrOfColls)
+         return ans;
+    
+    const {name, index} = getBestAlternative(columnTypes, columsOfValidTickets);
+    delete columnTypes[name];
+    ans[name] = myTicket[index];
+    myTicket.splice(index, 1);
+    columsOfValidTickets.splice(index, 1);
+    return mapColumns(columnTypes, columsOfValidTickets, myTicket, ans, nbrOfColls);
 }
 
 const getMyTicketValue = (columnTypes: { [name: string]: number[] }, nearbyTickets: string[], myTicket: number[]): number => {
