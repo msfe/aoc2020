@@ -156,7 +156,7 @@ async function main() {
     const map = getStartMap(input, 31);
     console.log(`Answer 1: ${getActiveAtRound(map, 6)}`);
     const map4d = getStartMap4d(input, 31);
-    console.log(`Answer 1: ${getActiveAtRound4d(map4d, 6)}`);
+    console.log(`Answer 2: ${getActiveAtRound4d(map4d, 6)}`);
 }
 
 main();
