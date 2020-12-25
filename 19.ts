@@ -39,10 +39,14 @@ const getValidOptions = (rules: { [index: number]: string }, index: number): str
     }
 }
 
+const countValidLines = (validLines: string[],data: string[]): number => {
+    return data.map(line => validLines.includes(line)).filter(val => val).length;
+}
+
 const getValidLines = (rules: { [index: number]: string }, data: string[]): number => {
-    const validData = getValidOptions(rules, 0);
-    console.log("Valid Data" + JSON.stringify(validData))
-    return 0;
+    const validLines = getValidOptions(rules, 0);
+    const nbrOfLines = countValidLines(validLines,data)
+    return nbrOfLines;
 }
 
 function main() {
